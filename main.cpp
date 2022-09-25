@@ -13,7 +13,7 @@
 //
 /////////////////////////////////////////////////////////////////
 ***********************************************************************/
-
+#include "File.h"
 #include "Population.h"
 #include <iostream>
 using namespace sdds;
@@ -23,12 +23,12 @@ using namespace std;
 
 int main() {
 
+
    // if loading of the population recrods into the dynamic memroy is successful
    if(load("PCpopulations.csv")) {
        // display all the records
       display();
    }
-
    // in any case delete the dynmaic memory if it is allocated
    deallocateMemory();
 

@@ -21,119 +21,136 @@
 #include <iostream>
 using namespace std;
 namespace sdds {
-    int strlen(const char* str) {
-        int len = 0;
-        while(str[len]) {
-            len++;
+    PcPopulation* ptr = nullptr;
+    FILE *fptr;
+
+    void printDuplicate(char line, int size)
+    {
+        for(int i = 0; i < size; i++)
+        {
+            cout << line;
         }
-        return len;
+        cout << endl;
     }
-    void strcpy(char* des, const char* src, int len) {
-        int i;
-        for(i = 0; src[i] && (len < 0 || i < len); i++) {
-            des[i] = src[i];
-        }
-        des[i] = 0; // turning the char array des in to a cString by null terminating it.
-    }
-    int strcmp(const char* s1, const char* s2) {
-        int i;
-        for(i = 0; s1[i] && s2[i] && s1[i] == s2[i]; i++);
-        return s1[i] - s2[i];
+    // Opens a file and keeps the file pointer in the File.cpp (file scope)
+    bool openFile(const char filename[]) {
+        fptr = fopen(filename, "r");
+        return fptr != NULL;
     }
 
-   FILE* fptr;
-   // Opens a file and keeps the file pointer in the File.cpp (file scope)
-   bool openFile(const char filename[]) {
-      fptr = fopen(filename, "r");
-      return fptr != NULL;
-   }
-   // Finds and returns the number of records kept in the file 
-   // to be used for the dynamic memory allocation of the records in the program
-   int noOfRecords() {
-      int noOfRecs = 0;
-      char ch;
-      while (fscanf(fptr, "%c", &ch) == 1) {
-         noOfRecs += (ch == '\n');
-      }
-      rewind(fptr);
-      return noOfRecs;
-   }
-   // Closes the open file
-   void closeFile() {
-      if (fptr) fclose(fptr);
-   }
-   bool read(int population, char* code, FILE * fptr){
-        bool success = false;
-        success = fscanf(fptr, "%3[^\n],%d", code, &population) == 2;
-        if(success)
-        {
-            return success;
+    // Finds and returns the number of records kept in the file
+    // to be used for the dynamic memory allocation of the records in the program
+    int noOfRecords() {
+        int noOfRecs = 0;
+        char ch;
+        while (fscanf(fptr, "%c", &ch) == 1) {
+            noOfRecs += (ch == '\n');
         }
-        return success;
+        rewind(fptr);
+        return noOfRecs;
     }
-    bool readTesters(){
-        bool test = false;
-        int i;
+
+    // Closes the open file
+    void closeFile() {
+        if (fptr) fclose(fptr);
+    }
+    bool ifCorrectContent(){
+        bool check = false;
+        int curNum = 0;
         char str[4];
-        if(read(i, str, fptr)){
+        check = fscanf(fptr, "%3[^\n],%d\n", str, &curNum) == 2;
+        return check;
+    }
+    bool load(const char *filename)
+    {
+        bool test = false;
+        if(openFile(filename))
+        {
             test = true;
+            if(!ifCorrectContent()){
+                test = false;
+                cout << "Error: incorrect number of records read; the "
+                        "data is possibly corrupted!" << endl;
+            }
+
         }
-        else{
-            cout << "Error: incorrect number of records read; "
-                    "the data is possibly corrupted!" << endl;
-            test = false;
+        else {
+            cout << "Could not open data file: "<< filename << endl;
+
         }
+
+
         return test;
     }
-    //I create cout lines function by the way I can understand
-    int getTotalLine(FILE *ffptr)
-    {
-       int numberOfLine{0};
-       char ch;
-       do{
-           ch= fgetc(ffptr);
-           if(ch == '\n') numberOfLine++;
-       }while(ch!=EOF);
-       return numberOfLine;
+    int totalPopulation{0};
+
+
+    int totalData = 0;
+    void display(){
+        cout << "Postal Code: population" << endl;
+        printDuplicate('-', 25);
+        totalData = load(ptr, fptr);
+        if(totalData){
+            for(int i = 0; i < totalData+1; i++)
+            {
+                cout  << "- " << ptr[i].m_postalCode << ":  "<< *ptr[i].m_population  << endl;
+
+            }
+        }
+        printDuplicate('-', 25);
+        cout << "Population of Canada: " << totalPopulation;
+
     }
-    int read(PcPopulation* &aptr) {
-        int i = 0;
-        int totalRecords = getTotalLine(fptr);
-        //cout << totalRecords;
-        int tempRecords{};
-        aptr = new PcPopulation[totalRecords];
-        bool flag = true;
-        for (i = 0; i < totalRecords && flag; i++)
+
+    void deallocateMemory() {
+        for(int i = 0; i < totalData+1; i++)
         {
+            delete ptr[i].m_population;
 
-            if (read(aptr[i], fptr)) {
-                tempRecords++;
-            }
-            else {
-                flag = false;
-            }
-
+            delete[] ptr[i].m_postalCode;
         }
-        return tempRecords;
-   }
-    bool read(PcPopulation &asmnt)
-    {
-
-        int tempNum{0};
-        char tempString[4];
-        bool readSuccess = read(tempNum, tempString, fptr);
-
-        if (readSuccess) {
-            *asmnt.m_population = tempNum;
-            asmnt.m_postalCode = new char[strlen(tempString)+1];
-            strcpy(asmnt.m_postalCode, tempString);
-            return true;
-        }
-        else{
-            return false;
-        }
-
-
-
+        delete [] ptr;
+        ptr = nullptr;
     }
+//    bool read(PcPopulation& asmnt, FILE* fptr){
+//        int size = noOfRecords();
+//        asmnt.m_population = new int;
+//        asmnt.m_postalCode = new char[4];
+//        while (fscanf(fptr, "%3[^\n],%d\n", asmnt.m_postalCode,
+//                      asmnt.m_population) != EOF);
+//        cout << *asmnt.m_population << " " << asmnt.m_postalCode << endl;
+//
+//
+//
+//        return true;
+//    }
+
+
+        int load(PcPopulation*& ptr, FILE* fptr)
+    {
+        int totalLines = noOfRecords();
+        ptr = new PcPopulation[totalLines];
+        bool flag = true;
+
+        int i = 0;
+        for(i = 0; i < totalLines+1 && flag; i++)
+        {
+            ptr[i].m_population = new int;
+            ptr[i].m_postalCode = new char[4];
+            fscanf(fptr, "%3[^\n],%d\n", ptr[i].m_postalCode,
+                   ptr[i].m_population);
+            totalPopulation+= *ptr[i].m_population;
+        }
+
+
+
+
+
+        closeFile();
+        return totalLines;
+    }
+
+
+
+
 }

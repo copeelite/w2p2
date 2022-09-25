@@ -16,22 +16,18 @@
 #ifndef SDDS_FILE_H_
 #define SDDS_FILE_H_
 #include "Population.h"
+#include <cstdio>
 namespace sdds {
-
-    int strlen(const char* str);
-    void strcpy(char* des, const char* src, int len=-1);
-    int strcmp(const char* s1, const char* s2);
-    int getTotalLine(FILE *ffptr);
-    bool read(int population, char* code, FILE * fptr);
-    bool readTesters();
-    int read(PcPopulation* &aptr);
+    void printDuplicate(char line, int size);
    // Opens a file and keeps the file pointer in the File.cpp (file scope)
    bool openFile(const char filename[]);
    // Closes the open file
    void closeFile();
-   // Finds the records kept in the file to be used for the dynamic memory allocation 
+   // Finds the records kept in the file to be used for the dynamic memory allocation
    // of the records in the file
-   int noOfRecords();
-    bool read(PcPopulation& asmnt, FILE* ffptr);
+    int noOfRecords();
+    bool load(const char *filename);
+    int load(PcPopulation*& ptr, FILE* fptr);
+    bool read(PcPopulation& asmnt, FILE* fptr);
 }
 #endif // !SDDS_FILE_H_
