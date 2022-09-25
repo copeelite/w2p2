@@ -19,11 +19,17 @@
 #include "File.h"
 #include "Population.h"
 #include <iostream>
+#include<algorithm>
+#include<vector>
 using namespace std;
 namespace sdds {
     PcPopulation* ptr = nullptr;
+    //PcPopulation* pptr = nullptr;
     FILE *fptr;
+    int totalPopulation{0};
 
+
+    int totalData = 0;
     void printDuplicate(char line, int size)
     {
         for(int i = 0; i < size; i++)
@@ -78,28 +84,40 @@ namespace sdds {
             cout << "Could not open data file: "<< filename << endl;
 
         }
+        if(test)
+        {
+            totalData = load(ptr, fptr);
+            bubble_sort(ptr);
+        }
 
 
         return test;
     }
-    int totalPopulation{0};
 
-
-    int totalData = 0;
     void display(){
         cout << "Postal Code: population" << endl;
         printDuplicate('-', 25);
-        totalData = load(ptr, fptr);
-        if(totalData){
-            for(int i = 0; i < totalData+1; i++)
-            {
-                cout  << "- " << ptr[i].m_postalCode << ":  "<< *ptr[i].m_population  << endl;
 
-            }
+
+        for (int i = 0;  i < totalData+1; i++)
+        {
+
+            cout << i + 1 << "- ";
+            display(ptr[i]);
         }
-        printDuplicate('-', 25);
-        cout << "Population of Canada: " << totalPopulation;
+//            for(int i = 0, j = 1; i < totalData+1; i++, j++)
+//            {
+//                cout  <<j<< "- " << ptr[i].m_postalCode << ":  "<< *ptr[i].m_population  << endl;
+//
+//            }
 
+        printDuplicate('-', 25);
+        cout << "Population of Canada: " << totalPopulation << endl;
+
+    }
+    void display(const PcPopulation& pptr)
+    {
+        cout << pptr.m_postalCode << ":  " << *pptr.m_population <<  endl;
     }
 
     void deallocateMemory() {
@@ -110,26 +128,19 @@ namespace sdds {
             delete[] ptr[i].m_postalCode;
         }
         delete [] ptr;
+        //delete[] pptr;
         ptr = nullptr;
+        //pptr = nullptr;
     }
-//    bool read(PcPopulation& asmnt, FILE* fptr){
-//        int size = noOfRecords();
-//        asmnt.m_population = new int;
-//        asmnt.m_postalCode = new char[4];
-//        while (fscanf(fptr, "%3[^\n],%d\n", asmnt.m_postalCode,
-//                      asmnt.m_population) != EOF);
-//        cout << *asmnt.m_population << " " << asmnt.m_postalCode << endl;
-//
-//
-//
-//        return true;
-//    }
+
+
 
 
         int load(PcPopulation*& ptr, FILE* fptr)
     {
         int totalLines = noOfRecords();
-        ptr = new PcPopulation[totalLines];
+        ptr = new PcPopulation[totalLines+1];
+        //pptr = new PcPopulation[totalLines+1];
         bool flag = true;
 
         int i = 0;
@@ -143,14 +154,34 @@ namespace sdds {
         }
 
 
-
-
-
         closeFile();
+
+
+
         return totalLines;
     }
 
 
+    void bubble_sort(PcPopulation*& aptr) {
+        int i, j;
+        PcPopulation temp;
+        for (i = 0; i < totalData; i++)
+        {
+            for (j = 0; j < totalData; j++)
+            {
+                //display(ptr[j]);
+                if (*aptr[j].m_population > *aptr[j + 1].m_population) {
+                    temp = aptr[j];
+                    aptr[j] = aptr[j+1];
+                    aptr[j+1] = temp;
+                }
 
 
-}
+            }
+
+        }
+
+    }
+
+
+    }

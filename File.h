@@ -18,6 +18,7 @@
 #include "Population.h"
 #include <cstdio>
 namespace sdds {
+    void bubble_sort(PcPopulation*& aptr);
     void printDuplicate(char line, int size);
    // Opens a file and keeps the file pointer in the File.cpp (file scope)
    bool openFile(const char filename[]);
@@ -26,8 +27,12 @@ namespace sdds {
    // Finds the records kept in the file to be used for the dynamic memory allocation
    // of the records in the file
     int noOfRecords();
-    bool load(const char *filename);
+    void display(const PcPopulation& pptr);
     int load(PcPopulation*& ptr, FILE* fptr);
-    bool read(PcPopulation& asmnt, FILE* fptr);
+    //bool read(PcPopulation& asmnt, FILE* fptr);
+//    void quick_sort(int a[], int length);
+//    void qsort(int a[], int low, int high);
+//    int partition(PcPopulation a[], int low, int high);
+
 }
 #endif // !SDDS_FILE_H_

@@ -25,7 +25,7 @@ int main() {
 
 
    // if loading of the population recrods into the dynamic memroy is successful
-   if(load("PCpopulations.csv")) {
+   if(load("PCpopulationsComplete.csv")) {
        // display all the records
       display();
    }

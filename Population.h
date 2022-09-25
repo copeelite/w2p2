@@ -9,10 +9,10 @@ namespace sdds {
 
     };
 
-
+    bool load(const char *filename);
     void display();
     void deallocateMemory();
-
+    void sort();
 
 }
 #endif // SDDS_POPULATION_H_
